@@ -6,7 +6,8 @@ A simple To-Do list app built with React.
 - Mark tasks as completed
 - Delete tasks
 
-  ![Screenshot (134)](https://github.com/user-attachments/assets/679adbfa-4efa-4242-9b6e-f600bbdecd62)
+  ![Screenshot (134)](https://github.com/user-attachments/assets/a4bbfa21-b81b-4569-b9a3-57a0e480c6a6)
+
 
 
 ## How to Run
