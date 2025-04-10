@@ -2,10 +2,11 @@
 
 Task Quest transforms the ordinary to-do list into an engaging RPG-style adventure where completing tasks earns you experience points, levels, and achievements!
 
-![WhatsApp Image 2025-04-10 at 10 52 47_56bc85a8](https://github.com/user-attachments/assets/5b59d491-4428-44c2-9101-19e43c0de9a3)
+## Live Demo
 
-![WhatsApp Image 2025-04-10 at 10 53 19_433b9dd8](https://github.com/user-attachments/assets/07b229f5-8626-496c-bf28-72dcef8d0651)
+Check out the live application: [Task Quest Live Demo](https://silly-muffin-ca39e5.netlify.app/)
 
+*Note: The frontend is deployed on Netlify. For the full experience with persistent data storage, you'll need to set up the backend server locally or deploy it to a service like Render or Heroku following the deployment instructions below.*
 
 ## Features
 
@@ -89,6 +90,65 @@ node server.js
 
 3. The application should now be running on http://localhost:3000
 
+## Deployment Options
+
+### Option 1: Deploy on Netlify (Frontend)
+
+The frontend is currently deployed on Netlify at [https://silly-muffin-ca39e5.netlify.app/](https://silly-muffin-ca39e5.netlify.app/).
+
+To deploy your own version:
+
+1. Fork or clone this repository to your GitHub account
+2. Log in to [Netlify](https://netlify.com)
+3. Click "New site from Git" and select your repository
+4. Configure build settings:
+   - Base directory: `Frontend` (if using the project structure described above)
+   - Build command: Leave blank
+   - Publish directory: `Frontend`
+5. Click "Deploy site"
+
+### Option 2: Deploy Backend on Render
+
+1. Create a new Web Service on [Render](https://render.com)
+2. Link your repository 
+3. Configure your service:
+   - Build Command: `npm install`
+   - Start Command: `node server.js`
+   - Root Directory: `Backend` (if using the project structure described above)
+4. Update the API URLs in your frontend to point to your Render service URL
+
+### Option 3: Deploy with Docker
+
+1. Create a Dockerfile in the project root:
+```dockerfile
+FROM node:14
+
+WORKDIR /app
+
+COPY Backend/package*.json ./
+RUN npm install
+
+COPY Backend ./
+COPY Frontend ./public
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
+```
+
+2. Build and run the Docker container:
+```bash
+docker build -t task-quest .
+docker run -p 3000:3000 task-quest
+```
+
+### Option 4: Connect Frontend to Local Backend
+
+If you've deployed the frontend on Netlify but want to use a local backend during development:
+
+1. Run the backend server locally on port 3000
+2. Use a CORS proxy extension in your browser to allow the frontend to communicate with your local backend
+3. Alternatively, modify the backend to accept requests from your Netlify domain
 
 ## Customization Options
 
@@ -164,3 +224,4 @@ MIT License
 ## Credits
 
 - Icons by [Font Awesome](https://fontawesome.com/)
+- Live demo hosted on [Netlify](https://silly-muffin-ca39e5.netlify.app/)
