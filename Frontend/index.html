@@ -1,106 +1,1550 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f9f9f9;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        form {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        input[type="text"] {
-            padding: 10px;
-            width: 60%;
-            margin-right: 10px;
-            border: 1px solid #ddd;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        li {
-            background-color: white;
-            padding: 15px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        li button {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Quest</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --primary-color: #7e57ff;
+    --secondary-color: #00c2cb;
+    --success-color: #00e676;
+    --danger-color: #ff4081;
+    --warning-color: #ffca28;
+    --info-color: #40c4ff;
+    --background-color: #f5f7ff;
+    --foreground-color: #333;
+    --card-background: white;
+    --border-color: #ddd;
+    --accent-gradient: linear-gradient(135deg, #7e57ff, #00c2cb);
+    --card-shadow: 0 8px 16px rgba(126, 87, 255, 0.1);
+}
+
+.dark-mode {
+    --primary-color: #bb86fc;
+    --secondary-color: #03dac6;
+    --success-color: #4caf50;
+    --danger-color: #ff4081;
+    --warning-color: #ffca28;
+    --info-color: #40c4ff;
+    --background-color: #10002b;
+    --foreground-color: #e0e0e0;
+    --card-background: #240046;
+    --border-color: #3c096c;
+    --accent-gradient: linear-gradient(135deg, #bb86fc, #03dac6);
+    --card-shadow: 0 8px 16px rgba(187, 134, 252, 0.2);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=Press+Start+2P&display=swap');
+
+body {
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+    transition: all 0.3s ease;
+    background-image: url('data:image/svg+xml;utf8,<svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10" x="0" y="0" rx="2" fill="%237e57ff" opacity="0.05"/></svg>');
+}
+
+header {
+    background: var(--accent-gradient);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="white" opacity="0.3"/></svg>');
+    pointer-events: none;
+}
+
+.app-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.app-title h1 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+    letter-spacing: 1px;
+}
+
+.app-title i {
+    font-size: 2rem;
+    filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.2));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.header-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.stats-bar {
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: var(--card-shadow);
+    border: none;
+    position: relative;
+    overflow: hidden;
+    transform: translateY(-15px);
+}
+
+.stats-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent-gradient);
+    z-index: 1;
+}
+
+.stat-item {
+    text-align: center;
+    position: relative;
+    padding: 10px;
+    z-index: 2;
+}
+
+.stat-item::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 60%;
+    background-color: var(--border-color);
+}
+
+.stat-item:last-child::after {
+    display: none;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.level-progress {
+    height: 10px;
+    background-color: rgba(224, 224, 224, 0.3);
+    border-radius: 10px;
+    margin-top: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.level-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(126, 87, 255, 0.5);
+    position: relative;
+}
+
+.level-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 20px 20px;
+    animation: move-stripes 2s linear infinite;
+    border-radius: 10px;
+}
+
+@keyframes move-stripes {
+    0% { background-position: 0 0; }
+    100% { background-position: 20px 0; }
+}
+
+.badges-section {
+    margin-bottom: 25px;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.badges-section h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1rem;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.badges-section h3::before {
+    content: '🏆';
+    font-size: 1.2rem;
+}
+
+.badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.badge {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: rgba(224, 224, 224, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #888;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px dashed #bbb;
+}
+
+.badge::after {
+    content: '?';
+    position: absolute;
+    font-size: 0.9rem;
+    font-weight: bold;
+    bottom: 5px;
+    right: 5px;
+    background-color: #bbb;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge.earned {
+    background: var(--accent-gradient);
+    color: white;
+    transform: scale(1.1);
+    border: none;
+    animation: badge-glow 2s infinite alternate;
+}
+
+.badge.earned::after {
+    display: none;
+}
+
+@keyframes badge-glow {
+    from { box-shadow: 0 0 5px rgba(126, 87, 255, 0.5); }
+    to { box-shadow: 0 0 20px rgba(126, 87, 255, 0.8); }
+}
+
+.badge-tooltip {
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+}
+
+.badge-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.badge:hover .badge-tooltip {
+    opacity: 1;
+    visibility: visible;
+    bottom: 105%;
+}
+
+.badge:hover {
+    transform: translateY(-5px);
+}
+
+.badge.earned:hover {
+    transform: scale(1.15) translateY(-5px);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+form::before {
+    content: '📜 New Quest';
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9rem;
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    color: var(--primary-color);
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--foreground-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(126, 87, 255, 0.1);
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(0, 194, 203, 0.3);
+}
+
+input[type="datetime-local"] {
+    padding: 12px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--foreground-color);
+    transition: all 0.3s ease;
+}
+
+input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(0, 194, 203, 0.3);
+}
+
+select {
+    padding: 15px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--foreground-color);
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6"><path fill="%237e57ff" d="M0 0l6 6 6-6z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(0, 194, 203, 0.3);
+}
+
+button {
+    padding: 15px 25px;
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(126, 87, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    letter-spacing: 0.5px;
+}
+
+button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(60deg, 
+        rgba(255, 255, 255, 0) 10%, 
+        rgba(255, 255, 255, 0.1) 20%, 
+        rgba(255, 255, 255, 0) 30%);
+    transform: rotate(45deg);
+    z-index: -1;
+    transition: all 0.7s ease;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(126, 87, 255, 0.4);
+}
+
+button:hover::after {
+    left: 100%;
+}
+
+button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(126, 87, 255, 0.4);
+}
+
+.button-add {
+    align-self: flex-end;
+    margin-top: 10px;
+}
+
+.task-list-container {
+    background-color: var(--card-background);
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.task-list-container::before {
+    content: '🗺️ Quest Log';
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9rem;
+    position: absolute;
+    top: 15px;
+    left: 25px;
+    color: var(--primary-color);
+}
+
+.task-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    background-color: transparent;
+    color: var(--foreground-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: var(--accent-gradient);
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+.filter-btn:hover::before {
+    width: 100%;
+}
+
+.filter-btn:hover {
+    color: white;
+    border-color: transparent;
+}
+
+.filter-btn.active {
+    background: var(--accent-gradient);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 10px rgba(126, 87, 255, 0.3);
+}
+
+.filter-btn.active::before {
+    width: 100%;
+}
+
+.task-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+.task-list::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 20px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--primary-color), transparent);
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+
+}
+
+.task-category.adventure {
+    background-color: var(--primary-color);
+}
+
+.task-category.daily {
+    background-color: var(--info-color);
+}
+
+.task-category.boss {
+    background-color: var(--danger-color);
+}
+
+.task-due {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.task-timer {
+    font-size: 0.9rem;
+    color: var(--danger-color);
+    font-weight: bold;
+}
+
+.task-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-complete, .btn-delete {
+    padding: 8px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-complete {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-delete {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.xp-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.xp-notification.show {
+    transform: translateX(0);
+}
+
+.xp-icon {
+    font-size: 1.5rem;
+}
+
+.xp-text {
+    font-weight: bold;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 0;
+    color: #777;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #ccc;
+}
+
+.level-up-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.level-up-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.level-up-content {
+    background-color: var(--card-background);
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.level-up-modal.show .level-up-content {
+    transform: scale(1);
+}
+
+.level-up-title {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.level-up-icon {
+    font-size: 4rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.close-modal {
+    background-color: var(--secondary-color);
+    padding: 10px 20px;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .stats-bar {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .task-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Connection Status */
+.connection-status {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-online {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.status-offline {
+    background-color: var(--danger-color);
+    color: white;
+}
+</style>
 </head>
 <body>
-    <h1>To-Do List</h1>
-    <form onsubmit="addTask(event)">
-        <input type="text" id="taskInput" placeholder="Enter a task" required>
-        <button type="submit">Add Task</button>
-    </form>
-    <ul id="taskList"></ul>
+<header>
+<div class="app-title">
+    <i class="fas fa-dragon"></i>
+    <h1>Task Quest</h1>
+</div>
+<div class="header-controls">
+    <button id="themeToggle" class="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+</div>
+</header>
 
-    <script>
-        async function fetchTasks() {
-    const response = await fetch('http://localhost:3000/tasks'); // Add server URL
-    const tasks = await response.json();
-    const taskList = document.getElementById('taskList');
+<div class="container">
+<div class="stats-bar">
+    <div class="stat-item">
+        <div class="stat-value" id="levelValue">1</div>
+        <div class="stat-label">Level</div>
+        <div class="level-progress">
+            <div class="level-bar" id="levelProgressBar"></div>
+        </div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="xpValue">0</div>
+        <div class="stat-label">Experience</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="tasksCompleted">0</div>
+        <div class="stat-label">Tasks Completed</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="currentStreak">0</div>
+        <div class="stat-label">Day Streak</div>
+    </div>
+</div>
+
+<div class="badges-section">
+    <h3>Achievements</h3>
+    <div class="badges-container" id="badgesContainer">
+        <!-- Badges will be dynamically added here -->
+        <div class="badge" id="badge-starter">
+            <i class="fas fa-star"></i>
+            <div class="badge-tooltip">Beginner: Complete your first task</div>
+        </div>
+        <div class="badge" id="badge-streak">
+            <i class="fas fa-fire"></i>
+            <div class="badge-tooltip">Consistent: 3-day streak</div>
+        </div>
+        <div class="badge" id="badge-master">
+            <i class="fas fa-award"></i>
+            <div class="badge-tooltip">Task Master: Complete 10 tasks</div>
+        </div>
+        <div class="badge" id="badge-urgent">
+            <i class="fas fa-bolt"></i>
+            <div class="badge-tooltip">First Responder: Complete a high-priority task</div>
+        </div>
+        <div class="badge" id="badge-variety">
+            <i class="fas fa-dice"></i>
+            <div class="badge-tooltip">Versatile: Complete tasks in all categories</div>
+        </div>
+    </div>
+</div>
+
+<form id="taskForm">
+    <div class="form-row">
+        <input type="text" id="taskInput" placeholder="Enter a new quest..." required>
+        <select id="taskCategory">
+            <option value="adventure">Adventure</option>
+            <option value="daily">Daily Quest</option>
+            <option value="boss">Boss Battle</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <select id="taskPriority">
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+        </select>
+        <input type="datetime-local" id="taskDueDate">
+    </div>
+    <button type="submit" class="button-add">
+        <i class="fas fa-plus"></i> Add Quest
+    </button>
+</form>
+
+<div class="task-list-container">
+    <div class="task-filters">
+        <button class="filter-btn active" data-filter="all">All Quests</button>
+        <button class="filter-btn" data-filter="adventure">Adventures</button>
+        <button class="filter-btn" data-filter="daily">Daily Quests</button>
+        <button class="filter-btn" data-filter="boss">Boss Battles</button>
+    </div>
+    <ul id="taskList" class="task-list">
+        <!-- Tasks will be added here -->
+    </ul>
+    <div id="emptyState" class="empty-state">
+        <i class="fas fa-scroll"></i>
+        <h3>Your quest log is empty!</h3>
+        <p>Add a new quest to begin your adventure.</p>
+    </div>
+</div>
+</div>
+
+<div class="xp-notification" id="xpNotification">
+<div class="xp-icon">
+    <i class="fas fa-star"></i>
+</div>
+<div class="xp-text">+20 XP</div>
+</div>
+
+<div class="level-up-modal" id="levelUpModal">
+<div class="level-up-content">
+    <div class="level-up-icon">
+        <i class="fas fa-level-up-alt"></i>
+    </div>
+    <h2 class="level-up-title">Level Up!</h2>
+    <p>You've reached level <span id="newLevel">2</span>!</p>
+    <p>Keep up the great work and continue your journey.</p>
+    <button class="close-modal" id="closeModal">Continue</button>
+</div>
+</div>
+
+<div class="connection-status" id="connectionStatus">
+<i class="fas fa-wifi"></i>
+<span>Online</span>
+</div>
+
+<script>
+// Player stats
+let playerStats = {
+    level: 1,
+    xp: 0,
+    tasksCompleted: 0,
+    currentStreak: 0,
+    lastCompletedDate: null,
+    xpToNextLevel: 100,
+    earnedBadges: [],
+    completedCategories: new Set()
+};
+
+// Cached tasks for offline mode
+let cachedTasks = [];
+let isOnline = true;
+
+// DOM Elements
+const taskForm = document.getElementById('taskForm');
+const taskInput = document.getElementById('taskInput');
+const taskCategory = document.getElementById('taskCategory');
+const taskPriority = document.getElementById('taskPriority');
+const taskDueDate = document.getElementById('taskDueDate');
+const taskList = document.getElementById('taskList');
+const levelValue = document.getElementById('levelValue');
+const xpValue = document.getElementById('xpValue');
+const tasksCompleted = document.getElementById('tasksCompleted');
+const currentStreak = document.getElementById('currentStreak');
+const levelProgressBar = document.getElementById('levelProgressBar');
+const emptyState = document.getElementById('emptyState');
+const xpNotification = document.getElementById('xpNotification');
+const levelUpModal = document.getElementById('levelUpModal');
+const newLevelSpan = document.getElementById('newLevel');
+const closeModal = document.getElementById('closeModal');
+const themeToggle = document.getElementById('themeToggle');
+const connectionStatus = document.getElementById('connectionStatus');
+const filterButtons = document.querySelectorAll('.filter-btn');
+
+// Initialize application
+document.addEventListener('DOMContentLoaded', () => {
+    // Load player stats from localStorage
+    loadPlayerStats();
+    
+    // Initialize theme
+    initializeTheme();
+    
+    // Fetch tasks from server
+    fetchTasks();
+    
+    // Add event listeners
+    setupEventListeners();
+    
+    // Check connection
+    checkConnection();
+    
+    // Setup task timers update interval
+    setInterval(updateTaskTimers, 60000); // Update every minute
+});
+
+// Initialize theme based on local storage or system preference
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    } else if (savedTheme === 'light') {
+        document.body.classList.remove('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    } else {
+        // Check system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
+    }
+}
+
+// Set up event listeners
+function setupEventListeners() {
+    // Form submission
+    taskForm.addEventListener('submit', handleAddTask);
+    
+    // Theme toggle
+    themeToggle.addEventListener('click', toggleTheme);
+    
+    // Modal close
+    closeModal.addEventListener('click', () => {
+        levelUpModal.classList.remove('show');
+    });
+    
+    // Filter buttons
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+            filterTasks(filter);
+            
+            // Update active state
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+}
+
+// Toggle theme between light and dark mode
+function toggleTheme() {
+    if (document.body.classList.contains('dark-mode')) {
+        document.body.classList.remove('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        localStorage.setItem('theme', 'light');
+    } else {
+        document.body.classList.add('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        localStorage.setItem('theme', 'dark');
+    }
+}
+
+// Check connection to server
+function checkConnection() {
+    fetch('http://localhost:3000/health')
+        .then(response => {
+            if (response.ok) {
+                isOnline = true;
+                connectionStatus.className = 'connection-status status-online';
+                connectionStatus.innerHTML = '<i class="fas fa-wifi"></i><span>Online</span>';
+                
+                // If we have cached tasks, sync them
+                if (cachedTasks.length > 0) {
+                    syncCachedTasks();
+                }
+            }
+        })
+        .catch(error => {
+            setOfflineMode();
+        });
+        
+    // Check again every 30 seconds
+    setTimeout(checkConnection, 30000);
+}
+
+// Set application to offline mode
+function setOfflineMode() {
+    isOnline = false;
+    connectionStatus.className = 'connection-status status-offline';
+    connectionStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Offline</span>';
+    
+    // Load tasks from localStorage
+    loadCachedTasks();
+}
+
+// Load player stats from localStorage
+function loadPlayerStats() {
+    const savedStats = localStorage.getItem('playerStats');
+    if (savedStats) {
+        playerStats = JSON.parse(savedStats);
+        
+        // Convert completedCategories from array back to Set
+        if (Array.isArray(playerStats.completedCategories)) {
+            playerStats.completedCategories = new Set(playerStats.completedCategories);
+        } else {
+            playerStats.completedCategories = new Set();
+        }
+        
+        // Update UI
+        updateStatsDisplay();
+        updateBadges();
+    }
+}
+
+// Save player stats to localStorage
+function savePlayerStats() {
+    // Convert Set to Array for JSON serialization
+    const statsToSave = {...playerStats};
+    statsToSave.completedCategories = Array.from(playerStats.completedCategories);
+    
+    localStorage.setItem('playerStats', JSON.stringify(statsToSave));
+}
+
+// Load cached tasks from localStorage
+function loadCachedTasks() {
+    const saved = localStorage.getItem('cachedTasks');
+    if (saved) {
+        cachedTasks = JSON.parse(saved);
+        renderTasks(cachedTasks);
+    }
+}
+
+// Save tasks to localStorage cache
+function saveCachedTasks() {
+    localStorage.setItem('cachedTasks', JSON.stringify(cachedTasks));
+}
+
+// Sync cached tasks with server when back online
+async function syncCachedTasks() {
+    for (const task of cachedTasks) {
+        try {
+            await fetch('http://localhost:3000/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(task),
+            });
+        } catch (error) {
+            console.error('Error syncing cached task:', error);
+        }
+    }
+    
+    // Clear cache after sync
+    cachedTasks = [];
+    saveCachedTasks();
+    
+    // Refresh tasks from server
+    fetchTasks();
+}
+
+// Fetch tasks from server
+async function fetchTasks() {
+    try {
+        const response = await fetch('http://localhost:3000/tasks');
+        const tasks = await response.json();
+        renderTasks(tasks);
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+        setOfflineMode();
+    }
+}
+
+// Add a new task
+async function handleAddTask(event) {
+    event.preventDefault();
+    
+    const task = {
+        name: taskInput.value,
+        category: taskCategory.value,
+        priority: taskPriority.value,
+        dueDate: taskDueDate.value || null,
+        createdAt: new Date().toISOString()
+    };
+    
+    if (isOnline) {
+        try {
+            await fetch('http://localhost:3000/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(task),
+            });
+            fetchTasks();
+        } catch (error) {
+            console.error('Error adding task:', error);
+            setOfflineMode();
+            
+            // Add to cached tasks
+            cachedTasks.push(task);
+            saveCachedTasks();
+            renderTasks(cachedTasks);
+        }
+    } else {
+        // Add to cached tasks
+        cachedTasks.push(task);
+        saveCachedTasks();
+        renderTasks(cachedTasks);
+    }
+    
+    // Reset form
+    taskInput.value = '';
+    taskDueDate.value = '';
+}
+
+// Complete a task
+async function completeTask(index) {
+    let xpGained = 0;
+    let taskData;
+    
+    if (isOnline) {
+        try {
+            // Get task data before deleting
+            const response = await fetch('http://localhost:3000/tasks');
+            const tasks = await response.json();
+            taskData = tasks[index];
+            
+            // Delete task from server
+            await fetch(`http://localhost:3000/tasks/${index}`, { method: 'DELETE' });
+            
+            // Calculate XP
+            xpGained = calculateXP(taskData);
+            
+            // Update player stats
+            updatePlayerStats(xpGained, taskData);
+            
+            // Refresh task list
+            fetchTasks();
+        } catch (error) {
+            console.error('Error completing task:', error);
+            setOfflineMode();
+            
+            // Use cached tasks
+            taskData = cachedTasks[index];
+            cachedTasks.splice(index, 1);
+            saveCachedTasks();
+            
+            // Calculate XP
+            xpGained = calculateXP(taskData);
+            
+            // Update player stats
+            updatePlayerStats(xpGained, taskData);
+            
+            // Refresh task list
+            renderTasks(cachedTasks);
+        }
+    } else {
+        // Offline mode - use cached tasks
+        taskData = cachedTasks[index];
+        cachedTasks.splice(index, 1);
+        saveCachedTasks();
+        
+        // Calculate XP
+        xpGained = calculateXP(taskData);
+        
+        // Update player stats
+        updatePlayerStats(xpGained, taskData);
+        
+        // Refresh task list
+        renderTasks(cachedTasks);
+    }
+    
+    // Show XP notification
+    showXPNotification(xpGained);
+}
+
+// Delete a task
+async function deleteTask(index) {
+    if (isOnline) {
+        try {
+            await fetch(`http://localhost:3000/tasks/${index}`, { method: 'DELETE' });
+            fetchTasks();
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            setOfflineMode();
+            
+            // Use cached tasks
+            cachedTasks.splice(index, 1);
+            saveCachedTasks();
+            renderTasks(cachedTasks);
+        }
+    } else {
+        // Offline mode - use cached tasks
+        cachedTasks.splice(index, 1);
+        saveCachedTasks();
+        renderTasks(cachedTasks);
+    }
+}
+
+// Calculate XP for completed task
+function calculateXP(task) {
+    let xp = 20; // Base XP
+    
+    // Bonus XP based on priority
+    if (task.priority === 'high') {
+        xp += 20;
+    } else if (task.priority === 'medium') {
+        xp += 10;
+    }
+    
+    // Bonus XP for boss battles
+    if (task.category === 'boss') {
+        xp += 15;
+    }
+    
+    // Bonus XP for completing before due date
+    if (task.dueDate) {
+        const now = new Date();
+        const dueDate = new Date(task.dueDate);
+        if (now < dueDate) {
+            xp += 10;
+        }
+    }
+    
+    return xp;
+}
+
+// Update player stats after completing a task
+function updatePlayerStats(xpGained, task) {
+    playerStats.xp += xpGained;
+    playerStats.tasksCompleted += 1;
+    
+    // Add category to completed categories
+    playerStats.completedCategories.add(task.category);
+    
+    // Check for level up
+    if (playerStats.xp >= playerStats.xpToNextLevel) {
+        levelUp();
+    }
+    
+    // Update streak
+    const today = new Date().toDateString();
+    
+    if (playerStats.lastCompletedDate) {
+        const lastDate = new Date(playerStats.lastCompletedDate).toDateString();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayString = yesterday.toDateString();
+        
+        if (today === lastDate) {
+            // Already completed a task today, streak stays the same
+        } else if (yesterdayString === lastDate) {
+            // Completed a task yesterday, increment streak
+            playerStats.currentStreak += 1;
+        } else {
+            // Streak broken
+            playerStats.currentStreak = 1;
+        }
+    } else {
+        // First task ever completed
+        playerStats.currentStreak = 1;
+    }
+    
+    playerStats.lastCompletedDate = new Date().toISOString();
+    
+    // Check for badges
+    checkForBadges(task);
+    
+    // Update UI
+    updateStatsDisplay();
+    
+    // Save stats
+    savePlayerStats();
+}
+
+// Level up the player
+function levelUp() {
+    playerStats.level += 1;
+    playerStats.xp -= playerStats.xpToNextLevel;
+    
+    // Increase XP needed for next level
+    playerStats.xpToNextLevel = Math.floor(playerStats.xpToNextLevel * 1.5);
+    
+    // Show level up modal
+    newLevelSpan.textContent = playerStats.level;
+    levelUpModal.classList.add('show');
+}
+
+// Check for badges earned
+function checkForBadges(task) {
+    // First task badge
+    if (playerStats.tasksCompleted === 1 && !playerStats.earnedBadges.includes('starter')) {
+        playerStats.earnedBadges.push('starter');
+    }
+    
+    // 3-day streak badge
+    if (playerStats.currentStreak >= 3 && !playerStats.earnedBadges.includes('streak')) {
+        playerStats.earnedBadges.push('streak');
+    }
+    
+    // Task master badge (10 tasks)
+    if (playerStats.tasksCompleted >= 10 && !playerStats.earnedBadges.includes('master')) {
+        playerStats.earnedBadges.push('master');
+    }
+    
+    // Urgent task badge
+    if (task.priority === 'high' && !playerStats.earnedBadges.includes('urgent')) {
+        playerStats.earnedBadges.push('urgent');
+    }
+    
+    // Variety badge (all categories)
+    if (playerStats.completedCategories.size >= 3 && !playerStats.earnedBadges.includes('variety')) {
+        playerStats.earnedBadges.push('variety');
+    }
+    
+    // Update badges display
+    updateBadges();
+}
+
+// Update badges display
+function updateBadges() {
+    playerStats.earnedBadges.forEach(badge => {
+        const badgeElement = document.getElementById(`badge-${badge}`);
+        if (badgeElement) {
+            badgeElement.classList.add('earned');
+        }
+    });
+}
+
+// Update stats display
+function updateStatsDisplay() {
+    levelValue.textContent = playerStats.level;
+    xpValue.textContent = playerStats.xp;
+    tasksCompleted.textContent = playerStats.tasksCompleted;
+    currentStreak.textContent = playerStats.currentStreak;
+    
+    // Update progress bar
+    const progressPercentage = (playerStats.xp / playerStats.xpToNextLevel) * 100;
+    levelProgressBar.style.width = `${progressPercentage}%`;
+}
+
+// Show XP notification
+function showXPNotification(xpAmount) {
+    const xpText = document.querySelector('.xp-text');
+    xpText.textContent = `+${xpAmount} XP`;
+    
+    xpNotification.classList.add('show');
+    
+    setTimeout(() => {
+        xpNotification.classList.remove('show');
+    }, 3000);
+}
+
+// Render tasks to the UI
+function renderTasks(tasks) {
     taskList.innerHTML = '';
+    
+    if (tasks.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+    }
+    
+    emptyState.style.display = 'none';
+    
     tasks.forEach((task, index) => {
         const li = document.createElement('li');
+        li.className = `task-item priority-${task.priority}`;
+        
+        // Format due date if exists
+        let dueText = '';
+        let timerText = '';
+        
+        if (task.dueDate) {
+            const dueDate = new Date(task.dueDate);
+            const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            dueText = `Due: ${dueDate.toLocaleDateString(undefined, options)}`;
+            
+            // Add countdown for high priority tasks
+            if (task.priority === 'high') {
+                const now = new Date();
+                const timeLeft = dueDate - now;
+                
+                if (timeLeft > 0) {
+                    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    timerText = `${hours}h ${minutes}m remaining`;
+                } else {
+                    timerText = 'Overdue!';
+                }
+            }
+        }
+        
         li.innerHTML = `
-            ${task}
-            <button onclick="deleteTask(${index})">Delete</button>
+            <div class="task-content">
+                <div class="task-header">
+                    <div class="task-name">${task.name}</div>
+                    <div class="task-category ${task.category}">${task.category}</div>
+                </div>
+                <div class="task-due">${dueText}</div>
+                ${timerText ? `<div class="task-timer"><i class="fas fa-clock"></i> ${timerText}</div>` : ''}
+            </div>
+            <div class="task-actions">
+                <button class="btn-complete" onclick="completeTask(${index})">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button class="btn-delete" onclick="deleteTask(${index})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
         `;
+        
         taskList.appendChild(li);
     });
+    
+    // Update task timers
+    updateTaskTimers();
 }
 
-async function addTask(event) {
-    event.preventDefault();
-    const taskInput = document.getElementById('taskInput');
-    await fetch('http://localhost:3000/tasks', { // Add server URL
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task: taskInput.value }),
+// Update countdown timers for tasks
+function updateTaskTimers() {
+    const timerElements = document.querySelectorAll('.task-timer');
+    
+    timerElements.forEach(timer => {
+        const taskElement = timer.closest('.task-item');
+        const index = Array.from(taskList.children).indexOf(taskElement);
+        
+        let taskData;
+        if (isOnline) {
+            // Use server data
+            fetch('http://localhost:3000/tasks')
+                .then(response => response.json())
+                .then(tasks => {
+                    taskData = tasks[index];
+                    updateTimer(timer, taskData);
+                })
+                .catch(() => {
+                    // Fallback to cached tasks
+                    taskData = cachedTasks[index];
+                    updateTimer(timer, taskData);
+                });
+        } else {
+            // Use cached data
+            taskData = cachedTasks[index];
+            updateTimer(timer, taskData);
+        }
     });
-    taskInput.value = '';
-    fetchTasks();
 }
 
-async function deleteTask(index) {
-    await fetch(`http://localhost:3000/tasks/${index}`, { method: 'DELETE' }); // Add server URL
-    fetchTasks();
+// Update a single timer element
+function updateTimer(timerElement, task) {
+    if (task && task.dueDate) {
+        const dueDate = new Date(task.dueDate);
+        const now = new Date();
+        const timeLeft = dueDate - now;
+        
+        if (timeLeft > 0) {
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            timerElement.innerHTML = `<i class="fas fa-clock"></i> ${hours}h ${minutes}m remaining`;
+        } else {
+            timerElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> Overdue!`;
+        }
+    }
 }
 
-    </script>
+// Filter tasks by category
+function filterTasks(category) {
+    const taskItems = document.querySelectorAll('.task-item');
+    
+    if (category === 'all') {
+        taskItems.forEach(item => {
+            item.style.display = 'flex';
+        });
+        return;
+    }
+    
+    taskItems.forEach(item => {
+        const taskCategory = item.querySelector('.task-category').textContent;
+        
+        if (taskCategory === category) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+</script>
 </body>
 </html>
